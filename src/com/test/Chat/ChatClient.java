@@ -21,7 +21,7 @@ public class ChatClient extends Frame {
 		add(taContent,BorderLayout.NORTH);
 		pack();
 		
-		this.setTitle("ÁÄÌìÊÒ");
+		this.setTitle("èŠå¤©å®¤");
 		this.setBackground(Color.DARK_GRAY);
 		this.setResizable(false);
 		
