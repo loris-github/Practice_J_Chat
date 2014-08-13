@@ -2,6 +2,8 @@ package com.test.Chat;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.net.*;
 
 public class ChatClient extends Frame {
 	
@@ -26,11 +28,14 @@ public class ChatClient extends Frame {
 		tfTxt.addActionListener(new TFListener());
 		
 		this.addWindowListener(new WindowAdapter()	{
+			
+			@Override
 			public void windowClosing(WindowEvent e){
 				System.exit(0);
 			}		
 		});
 		
+		connect();
 		this.setVisible(true);
 		
 		
@@ -61,6 +66,19 @@ public class ChatClient extends Frame {
 			tfTxt.setText("");
 		}
 		
+	}
+	
+	public void connect(){
+		try {
+			Socket s = new Socket("127.0.0.1",8888);
+			System.out.println("connected!");
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String args[]){
