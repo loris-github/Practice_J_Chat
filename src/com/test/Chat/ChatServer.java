@@ -32,9 +32,11 @@ public class ChatServer {
 				}
 				//dis.close();
 			}
-		} catch (IOException e) {
+		} catch (EOFException e) {
 			//e.printStackTrace();
 			System.out.println("Client closed");
+		} catch (Exception e){
+			e.printStackTrace();
 		} finally{
 			try{
 				if(dis != null) dis.close();
