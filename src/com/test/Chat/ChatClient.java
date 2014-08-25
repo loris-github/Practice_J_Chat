@@ -9,6 +9,7 @@ import java.io.*;
 public class ChatClient extends Frame {
 	
 	Socket s = null;
+	DataOutputStream dos = null;
 	public static final int CHAT_WIDTH = 300 ;
 	public static final int CHAT_HEIGTH = 800 ;
 	
@@ -33,15 +34,13 @@ public class ChatClient extends Frame {
 			
 			@Override
 			public void windowClosing(WindowEvent e){
+				disconnect();
 				System.exit(0);
 			}		
 		});
 		
 		connect();
 		this.setVisible(true);
-		
-		
-		
 		new Thread(new PaintThread()).start();
 		
 	}
@@ -67,7 +66,7 @@ public class ChatClient extends Frame {
 			taContent.setText(str);
 			tfTxt.setText("");
 			try {
-				DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+				//DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 				dos.writeUTF(str);
 				dos.flush();
 				//dos.close();
@@ -81,10 +80,20 @@ public class ChatClient extends Frame {
 	public void connect(){
 		try {
 			s = new Socket("127.0.0.1",8888);
+			dos = new DataOutputStream(s.getOutputStream());
 			System.out.println("connected!");
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void disconnect(){
+		try {
+			dos.close();
+			s.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
