@@ -4,9 +4,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.*;
+import java.io.*;
 
 public class ChatClient extends Frame {
 	
+	Socket s = null;
 	public static final int CHAT_WIDTH = 300 ;
 	public static final int CHAT_HEIGTH = 800 ;
 	
@@ -61,16 +63,24 @@ public class ChatClient extends Frame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String s = tfTxt.getText().trim();
-			taContent.setText(s);
+			String str = tfTxt.getText().trim();
+			taContent.setText(str);
 			tfTxt.setText("");
+			try {
+				DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+				dos.writeUTF(str);
+				dos.flush();
+				//dos.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 	}
 	
 	public void connect(){
 		try {
-			Socket s = new Socket("127.0.0.1",8888);
+			s = new Socket("127.0.0.1",8888);
 			System.out.println("connected!");
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
