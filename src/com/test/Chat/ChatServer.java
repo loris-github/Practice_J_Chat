@@ -14,7 +14,9 @@ public class ChatServer {
 		
 		try {
 			ss = new ServerSocket(8888);
-		} catch (IOException e1) {
+		} catch(BindException e){
+			System.out.println("端口被占了 ╮(╯▽╰)╭");
+		}catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		
