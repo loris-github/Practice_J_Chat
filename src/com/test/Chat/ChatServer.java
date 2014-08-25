@@ -6,32 +6,30 @@ import java.io.*;
 
 public class ChatServer {
 
+	boolean started = false;
+	ServerSocket ss = null;
+	
 	public static void main(String[] args) {
-		boolean started = false;
-		ServerSocket ss = null;
-		Socket s = null;
-		DataInputStream dis = null;
-		
+		new ChatServer().start();
+	}
+
+	public void start(){
 		try {
 			ss = new ServerSocket(8888);
-		} catch(BindException e){
+			started = true;
+		} catch (BindException e){
 			System.out.println("端口被占了 ╮(╯▽╰)╭");
-		}catch (IOException e1) {
+		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		
 		try {			
-			started = true;
 			while(started){
-				boolean bConnected = false;
-				s = ss.accept();
+				Socket s = ss.accept();
+				Client c = new Client(s);
 				System.out.println("a client connected!");
-				bConnected = true;				
-				dis = new DataInputStream(s.getInputStream());				
-				while(bConnected){
-					String str = dis.readUTF();
-					System.out.println(str);
-				}
+				new Thread(c).start();
+
 				//dis.close();
 			}
 		} catch (EOFException e) {
@@ -40,14 +38,52 @@ public class ChatServer {
 		} catch (Exception e){
 			e.printStackTrace();
 		} finally{
-			try{
-				if(dis != null) dis.close();
-				if(s != null) s.close();
-			} catch(IOException e1){
-				e1.printStackTrace();
+			try {
+				ss.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
-
 	}
+	
+	class Client implements Runnable{
+		private Socket s;
+		private DataInputStream dis = null;
+		private boolean bConnected = false;
+		public Client (Socket s){
+			this.s = s;
+			try {
+				dis  = new DataInputStream(s.getInputStream());
+				bConnected  = true;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		@Override
+		public void run() {
+			try{
+				while(bConnected){
+					String str = dis.readUTF();
+					System.out.println(str);
+				}
+			} catch (EOFException e) {
+				//e.printStackTrace();
+				System.out.println("Client closed");
+			} catch (Exception e){
+				e.printStackTrace();
+			} finally{
+				try{
+					if(dis != null) dis.close();
+					if(s != null) s.close();
+				} catch(IOException e1){
+					e1.printStackTrace();
+				}
+			}
 
+			
+		}
+		
+	}
 }
