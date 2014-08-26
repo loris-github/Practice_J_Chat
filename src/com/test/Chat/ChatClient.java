@@ -2,20 +2,30 @@ package com.test.Chat;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
 import java.io.*;
 
+import com.test.Chat.ChatServer.Client;
+
 public class ChatClient extends Frame {
 	
 	Socket s = null;
+	ServerSocket ss = null;
 	DataOutputStream dos = null;
+	DataInputStream dis = null;
+	boolean started = false;
+	private boolean bConnected = false;
+	
 	public static final int CHAT_WIDTH = 300 ;
 	public static final int CHAT_HEIGTH = 800 ;
 	
 	TextField tfTxt = new TextField();
 	TextArea taContent = new TextArea();
-	
+	Thread tRecv = new Thread(new RecvThread());
 
 	public void LuanchFrame(){
 		this.setLocation(300,600);
@@ -42,7 +52,7 @@ public class ChatClient extends Frame {
 		connect();
 		this.setVisible(true);
 		new Thread(new PaintThread()).start();
-		
+		tRecv.start();
 	}
 	
 	private class PaintThread implements Runnable{
@@ -63,7 +73,7 @@ public class ChatClient extends Frame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String str = tfTxt.getText().trim();
-			taContent.setText(str);
+			//taContent.setText(str);
 			tfTxt.setText("");
 			try {
 				//DataOutputStream dos = new DataOutputStream(s.getOutputStream());
@@ -74,14 +84,15 @@ public class ChatClient extends Frame {
 				e1.printStackTrace();
 			}
 		}
-		
 	}
 	
 	public void connect(){
 		try {
 			s = new Socket("127.0.0.1",8888);
 			dos = new DataOutputStream(s.getOutputStream());
+			dis = new DataInputStream(s.getInputStream());		
 			System.out.println("connected!");
+			bConnected = true;
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,18 +104,58 @@ public class ChatClient extends Frame {
 	public void disconnect(){
 		try {
 			dos.close();
+			dis.close();
 			s.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//下边的语句会导致客户端不能关闭
+		/*try {
+			bConnected = false;
+			tRecv.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+
+		}*/
+		
 	}
-	
+
 	public static void main(String args[]){
 		ChatClient cc = new ChatClient();
 		cc.LuanchFrame();
+
 	}
 	
+	class RecvThread implements Runnable {
 	
+		@Override
+		public void run() {
+			try{
+				while(bConnected){
+					String str = dis.readUTF();
+					taContent.setText(taContent.getText()+str+'\n');
+				}
+			} catch(SocketException e){
+				System.out.println("客户端退出了！( ^_^ )/~~拜拜");
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+			/*finally{
+				try{
+					if(dis != null) dis.close();
+					if(dos != null) dos.close();
+					if(s != null) s.close();
+				} catch(IOException e1){
+					e1.printStackTrace();
+				}
+			}*/
+			
+		}
+		
+	}
+
 }
 

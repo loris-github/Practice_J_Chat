@@ -102,7 +102,10 @@ public class ChatServer {
 				try{
 					if(dis != null) dis.close();
 					if(dos != null) dos.close();
-					if(s != null) s.close();
+					if(s != null) {
+						s.close();
+						s=null; //比较严格的写法，只有设置成空值之后垃圾收集器才会处理
+					}
 				} catch(IOException e1){
 					e1.printStackTrace();
 				}
