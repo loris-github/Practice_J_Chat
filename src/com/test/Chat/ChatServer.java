@@ -60,22 +60,31 @@ public class ChatServer {
 				e.printStackTrace();
 			}
 		}
+		
 		public void send(String str){
 			try {
 				dos.writeUTF(str);
 			} catch (IOException e) {
-				e.printStackTrace();
+				clients.remove(this);
+				System.out.println("某人退了！");
+				//e.printStackTrace();
 			}
 		}
+		
+		/*public void send(String str) throws IOException {
+				dos.writeUTF(str);
+		}*/
+		
 		@Override
 		public void run() {
+			Client c = null;		
 			try{
 				while(bConnected){
 					String str = dis.readUTF();
 					System.out.println(str);
 					
 					for(int i=0;i<clients.size();i++){
-						Client c = clients.get(i);
+						c = clients.get(i);
 						c.send(str);
 					}
 					

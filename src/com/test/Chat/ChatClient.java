@@ -138,8 +138,9 @@ public class ChatClient extends Frame {
 					taContent.setText(taContent.getText()+str+'\n');
 				}
 			} catch(SocketException e){
-				System.out.println("客户端退出了！( ^_^ )/~~拜拜");
-				
+				System.out.println("客户端退出了！( ^_^ )/~~拜拜");			
+			} catch (EOFException e){
+				System.out.println("某客户端退了 ╮(╯▽╰)╭");
 			} catch (IOException e) {
 				e.printStackTrace();
 			} 
