@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.JOptionPane; 
+
 
 public class ChatServer {
 
@@ -16,13 +18,16 @@ public class ChatServer {
 
 	public void start(){
 		try {
-			ss = new ServerSocket(8888);
-			started = true;
+			ss = new ServerSocket(8888);			
 		} catch (BindException e){
-			System.out.println("端口被占了 ╮(╯▽╰)╭");
+			JOptionPane.showMessageDialog(null, "端口被占了 ╮(╯▽╰)╭");
+			System.exit(0);
 		} catch (IOException e1) {
 			e1.printStackTrace();
+			System.exit(0);
 		}
+		
+		started = true;
 		
 		try {
 			while(started){

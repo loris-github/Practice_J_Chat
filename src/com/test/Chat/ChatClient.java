@@ -8,6 +8,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
 import java.io.*;
+import javax.swing.JOptionPane;
 
 import com.test.Chat.ChatServer.Client;
 
@@ -72,7 +73,7 @@ public class ChatClient extends Frame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String str = tfTxt.getText().trim();
+			String str = "涛曰："+'\n'+tfTxt.getText().trim()+'\n'+'\n';
 			//taContent.setText(str);
 			tfTxt.setText("");
 			try {
@@ -88,18 +89,28 @@ public class ChatClient extends Frame {
 	
 	public void connect(){
 		try {
-			s = new Socket("127.0.0.1",8888);
-			dos = new DataOutputStream(s.getOutputStream());
-			dis = new DataInputStream(s.getInputStream());		
-			System.out.println("connected!");
-			bConnected = true;
+			s = new Socket("10.7.1.172",8888);
+			
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "服务器连接失败!");
+			s = null;
+			System.exit(0);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "服务器连接失败!");
+			s = null;
+			System.exit(0);
 		}
+		
+		System.out.println("connected!");
+		
+		try {
+			dos = new DataOutputStream(s.getOutputStream());
+			dis = new DataInputStream(s.getInputStream());
+		} catch (IOException e) {
+			System.out.println("管道建立失败!");
+		}
+		
+		bConnected = true;
 	}
 	public void disconnect(){
 		try {
@@ -135,7 +146,9 @@ public class ChatClient extends Frame {
 			try{
 				while(bConnected){
 					String str = dis.readUTF();
-					taContent.setText(taContent.getText()+str+'\n');
+					//taContent.setText(taContent.getText()+str+'\n');
+					taContent.append(str);				
+					taContent.setCaretPosition(taContent.getText().length()); //自动滚动到最新一行
 				}
 			} catch(SocketException e){
 				System.out.println("客户端退出了！( ^_^ )/~~拜拜");			
